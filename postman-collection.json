@@ -1,0 +1,449 @@
+{
+	"info": {
+		"_postman_id": "55b30a40-32b8-4def-9105-72120f998d12",
+		"name": "Online City Library Lending System API v12",
+		"description": "Complete API collection for the Online City Library Lending System with JWT Authentication, Borrow and Return APIs including optimized transaction handling",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10566700"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"membuser\",\n  \"password\": \"memb12345\",\n  \"role\": \"Member\"\n}\n// {\n//   \"username\": \"libuser\",\n//   \"password\": \"lib12345\",\n//   \"role\": \"Librarian\"\n// }"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('jwt_token', response.token);",
+									"    console.log('JWT Token saved:', response.token);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"membuser\",\n  \"password\": \"memb12345\"\n}\n// {\n//   \"username\": \"libuser\",\n//   \"password\": \"lib12345\"\n// }"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Library Branches",
+			"item": [
+				{
+					"name": "Get All Branches",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/branches",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"branches"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Branch",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"North Branch\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/branches",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"branches"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books Management",
+			"item": [
+				{
+					"name": "Create Book",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"newBook\",\n    \"author\": \"Test Author\",\n    \"publishYear\": 2024,\n    \"categoryId\": 2,\n    \"extra\": \"{}\",\n    \"bookCopies\": [\n        {\n            \"branchId\": 1,\n            \"quantity\": 1\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/books",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Books",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/books/search?title=Spring&author=Joshua&year=2018&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"search"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "Spring"
+								},
+								{
+									"key": "author",
+									"value": "Joshua"
+								},
+								{
+									"key": "year",
+									"value": "2018"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Book Title\",\n  \"author\": \"Updated Author Name\",\n  \"publishYear\": 2024,\n  \"categoryId\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/books/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"1"
+							]
+						},
+						"description": "Update book information (only provided fields will be updated, others remain unchanged)"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Book Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/books/copies/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"books",
+								"copies",
+								"1"
+							]
+						},
+						"description": "Soft delete a book copy (marks as DELETED, preserves loan history)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Loan Management",
+			"item": [
+				{
+					"name": "Borrow Books - By Cpoy ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"items\": [\n    {\n      \"bookCopiesId\": 5\n    },\n    {\n      \"bookCopiesId\": 6\n    }\n  ]\n}\n\n// 10本BOOK類型書籍\n// {\n//   \"items\": [\n//     {\n//       \"bookCopiesId\": 15\n//     },\n//     {\n//       \"bookCopiesId\": 16\n//     },\n//     {\n//       \"bookCopiesId\": 17\n//     },\n//     {\n//       \"bookCopiesId\": 18\n//     },\n//     {\n//       \"bookCopiesId\": 19\n//     },\n//     {\n//       \"bookCopiesId\": 20\n//     },\n//     {\n//       \"bookCopiesId\": 21\n//     },\n//     {\n//       \"bookCopiesId\": 22\n//     },\n//     {\n//       \"bookCopiesId\": 23\n//     },\n//     {\n//       \"bookCopiesId\": 24\n//     },\n//     {\n//       \"bookCopiesId\": 25\n//     }\n//   ]\n// }\n\n// 10本BOOK類型書籍\n// {\n//   \"items\": [\n//     {\n//       \"bookCopiesId\": 26\n//     },\n//     {\n//       \"bookCopiesId\": 27\n//     },\n//     {\n//       \"bookCopiesId\": 28\n//     },\n//     {\n//       \"bookCopiesId\": 29\n//     },\n//     {\n//       \"bookCopiesId\": 30\n//     },\n//     {\n//       \"bookCopiesId\": 31\n//     }\n//   ]\n// }"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans/borrow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans",
+								"borrow"
+							]
+						},
+						"description": "Test borrowing using only bookCopiesId\n\nAvailable book_copies.id:\n- BOOK type (limit 10): ID 1-4, 5-14, 15-25\n- JOURNAL type (limit 5): ID 26-36"
+					},
+					"response": []
+				},
+				{
+					"name": "Return Books - By Copy ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"items\": [\n    {\n      \"bookCopiesId\": 5\n    },\n    {\n      \"bookCopiesId\": 6\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans/return",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans",
+								"return"
+							]
+						},
+						"description": "Test returning books using only bookCopiesId\n\nAvailable book_copies.id:\n- BOOK type (limit 10): ID 1-4, 5-14, 15-25\n- JOURNAL type (limit 5): ID 26-36"
+					},
+					"response": []
+				},
+				{
+					"name": "Return Books - By Barcode",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"items\": [\n    {\n      \"barcode\": \"C001\"\n    },\n    {\n      \"barcode\": \"N001\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans/return",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans",
+								"return"
+							]
+						},
+						"description": "Test returning books using only barcodes"
+					},
+					"response": []
+				},
+				{
+					"name": "Return Books - By Barcode",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"items\": [\n    {\n      \"barcode\": \"C001\"\n    },\n    {\n      \"barcode\": \"N001\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/loans/return",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"loans",
+								"return"
+							]
+						},
+						"description": "Return books using only barcode identifiers"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8888/api"
+		},
+		{
+			"key": "jwt_token",
+			"value": ""
+		}
+	]
+}

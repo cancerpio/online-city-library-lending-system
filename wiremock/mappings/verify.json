@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/",
+    "headers": { 
+      "Authorization": { "equalTo": "todo" } 
+    }
+  },
+  "response": { 
+    "status": 200, 
+    "jsonBody": { "ok": true } 
+  }
+}

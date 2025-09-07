@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  # 開發環境主應用程式
+  online-city-library-lending-system:
+    build: .
+    container_name: library-app-dev
+    ports:
+      - "8889:8888"  # 使用不同端口避免與 production 衝突
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      # 讓 Testcontainers 使用主機的 Docker https://java.testcontainers.org/features/configuration/
+      - TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+      - OVERDUE_CHECK_INTERVAL=1
+    volumes:
+      # 共享 Docker socket 讓 Testcontainers 能建立sub-container
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - library-dev-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  library-dev-network:
+    driver: bridge

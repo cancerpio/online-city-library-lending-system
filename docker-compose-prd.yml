@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # PostgreSQL，為了模擬正式環境的DB以方便整合測試
+  postgres:
+    image: postgres:16
+    container_name: library-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    networks:
+      - library-network
+    env_file:
+      - .env.prod
+
+  # Wiremock 模擬外部 API
+  mock-verify:
+    image: wiremock/wiremock:3.6.0
+    container_name: library-wiremock
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./wiremock:/home/wiremock
+    networks:
+      - library-network
+
+  # 主應用程式
+  online-city-library-lending-system:
+    build: .
+    container_name: library-app
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - LIBRARY_EXTERNAL_API_URL=http://mock-verify:8080
+      - LIBRARY_EXTERNAL_API_AUTH_HEADER=${LIBRARY_EXTERNAL_API_AUTH_HEADER}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - OVERDUE_CHECK_INTERVAL=${OVERDUE_CHECK_INTERVAL:-1}
+    depends_on:
+      - postgres
+      - mock-verify
+    networks:
+      - library-network
+    env_file:
+      - .env.prod
+
+volumes:
+  postgres_data:
+
+networks:
+  library-network:
+    driver: bridge
