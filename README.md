@@ -6,6 +6,10 @@
 - Docker & Docker Compose
 - Java 21+ (僅開發需要)
 
+### 使用JWT Token 做身份驗證
+- 使用帳號密碼登入，或者註冊成功後，API會回應JWT Token
+- 後續需要在header帶上JWT Token才能使用其他API的功能
+
 ### 啟動 Production 環境
 - 正式環境中，資料庫會使用雲端託管(Ex: AWS RDS)，或獨立維運的服務，不會與本系統一起由 docker-compose 啟動。
 - 本專案的docker-compose-prd.yml僅供模擬Production環境的用途( DB / 館員驗證的外部API )。
