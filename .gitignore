@@ -19,7 +19,7 @@ out/
 Thumbs.db
 
 # === Dependency caches ===
-.mvn/
+#.mvn/
 .gradle/
 !gradle/wrapper/gradle-wrapper.jar
 
