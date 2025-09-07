@@ -9,6 +9,9 @@
 ### 使用JWT Token 做身份驗證
 - 使用帳號密碼登入，或者註冊成功後，API會回應JWT Token
 - 後續需要在header帶上JWT Token才能使用其他API的功能
+- JWT Token過期時間:
+  - 預設一天後過期，需要重新登入
+  - 可在環境變數: JWT_EXPIRATION 設定過期秒數
 
 ### 啟動 Production 環境
 - 正式環境中，資料庫會使用雲端託管(Ex: AWS RDS)，或獨立維運的服務，不會與本系統一起由 docker-compose 啟動。
