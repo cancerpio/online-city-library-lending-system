@@ -7,7 +7,7 @@
 - Slides: https://docs.google.com/presentation/d/1HYidbLgT3KfgpnCgQ-IrGV9p4jhIor6w/edit?usp=sharing&ouid=106736669961023999979&rtpof=true&sd=true
 
 ## Assignment: Functionality Improvements
-1) **DB-backed Consistency — Return Book Row Lock方式改善**  
+1) **Row Lock (book_copies, loans) — 還書的 Row Lock 方式改善**  
    現狀:
     - 在還書時，因為Query Method是以 `loans` 為 root，所以在 `SELECT` 階段時，Row Lock只鎖了 `loans`，沒有鎖到 `book_copies`。
     - 假設有兩個還書的Transaction，在這段空窗期可能同時讀到同一筆 `book_copies.status` ，之後在 `UPDATE` 才碰撞，造成等待或較易形成Deadlock。
