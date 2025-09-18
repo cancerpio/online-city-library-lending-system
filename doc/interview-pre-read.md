@@ -44,7 +44,7 @@
 
 2) **Deadlock Prevention — 借還書時，避免多個副本Deadlock的方式**  
    現狀:
-    - 在查詢完成時，才在SQL用 `ORDER BY` 把查詢結果做排序，並沒有避免Deadlock，應該要在 Service層就在Java端用統一的方式排序。
+    - 在查詢完成時，才在SQL用 `ORDER BY` 把查詢結果做排序。
    ```
    @Lock(LockModeType.PESSIMISTIC_WRITE)
    @Query("SELECT bc FROM InventoryItem bc WHERE bc.id IN :copyIds ORDER BY bc.id")
@@ -63,7 +63,7 @@
    List<InventoryItem> lockedCopies = loanRepository.findAndLockCopies(copyIds
    ```
 
-3) **JPA Performance Optimization - Lazy Fetching — 借書時，做了多餘的Join Table**  
+3) **JPA Performance Optimization - Lazy Fetching — 借書時，做了額外的Join Table**  
    現狀:
     - 在借書流程，檢查使用者當前已借的書 / 圖書數量時，實際上我們只需要books的資訊，並不需要branch (分館資訊)。
     - 目前 `book_copies` 的JPA Entity因為在 `branch` 標記了 `@ManyToOne` 和 `@JoinColumn`，導致多join了不需要的branch 資訊。
@@ -72,17 +72,17 @@
     @JoinColumn(name = "branch_id")
     private LibraryBranch branch;
    ```
-   改善方式: 應該要在`branch`的 `@ManyToOne` 加上`fetch = FetchType.LAZY`，避免撈到不需要的資料。
+   改善方式: 在`branch`的 `@ManyToOne` 加上`fetch = FetchType.LAZY`，避免撈到不需要的資料。
    ```
    @ManyToOne(optional = false, fetch = FetchType.LAZY)
    @JoinColumn(name = "branch_id")
    private LibraryBranch branch;
    ```       
 
-4) **Duplicate IDs 不該去重 — 借還書時，有重複的副本應該通知使用者**  
+4) **Duplicate IDs 借還書時，有重複的副本應該通知使用者**  
    現狀:
     - 在借還書流程中，會自動檢查`book_copies id`並且去掉重複的副本，所以有重複的副本並不會中斷流程並回應錯誤。
-    - 但此方式可能會造成使用者誤判，以為該還的書都還了，實際上是`輸入錯誤而不自知`。
+    - 做法視需求場景而定，但有可能會造成使用者誤判，以為該還的書都還了，實際上是`輸入錯誤而不自知`。
         - Ex: 應該要還副本`1,2,3`，結果API誤植成`1,2,2`，導致實際只還了`1, 2`沒還到`3`，但是API會回覆Success。
 
    改善方式: 有重複的副本應該回應錯誤，通知使用者。
